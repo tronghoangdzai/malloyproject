@@ -1,0 +1,71 @@
+source: vehicles is duckdb.table("vehicles.csv") extend {
+  measure:
+    avg_price is average(price),
+    count_listings is count()
+}
+
+# 1. Average Price by Manufacturer
+query: avg_price_by_brand is vehicles -> {
+  where: price > 1000 and price < 100000
+  group_by: manufacturer
+  aggregate: avg_price, count_listings
+  order_by: avg_price desc
+  limit: 15
+}
+
+# 2. Price vs Mileage
+query: price_vs_mileage is vehicles -> {
+  where: price > 1000 and price < 100000 and odometer is not null
+  group_by: mileage_group is bin(odometer, 20000)
+  aggregate: avg_price, count_listings
+  order_by: mileage_group
+}
+
+# 3. Price by Condition
+query: avg_price_by_condition is vehicles -> {
+  where: price > 1000 and price < 100000 and condition is not null
+  group_by: condition
+  aggregate: avg_price, count_listings
+  order_by: avg_price desc
+}
+
+# 4. Average Price by State
+query: avg_price_by_state is vehicles -> {
+  where: price > 1000 and price < 100000 and state is not null
+  group_by: state
+  aggregate: avg_price, count_listings
+  order_by: avg_price desc
+  limit: 20
+}
+
+# 5. Price by Year
+query: avg_price_by_year is vehicles -> {
+  where: price > 1000 and price < 100000 and year is not null
+  group_by: year
+  aggregate: avg_price, count_listings
+  order_by: year desc
+}
+
+# 6. Average Price by Type
+query: avg_price_by_type is vehicles -> {
+  where: price > 1000 and price < 100000 and type is not null
+  group_by: type
+  aggregate: avg_price, count_listings
+  order_by: avg_price desc
+}
+
+# 7. Price by Fuel Type
+query: avg_price_by_fuel is vehicles -> {
+  where: price > 1000 and price < 100000 and fuel is not null
+  group_by: fuel
+  aggregate: avg_price, count_listings
+  order_by: avg_price desc
+}
+
+# 8. Most Common Manufacturers and Models
+query: most_common_models is vehicles -> {
+  group_by: manufacturer, model
+  aggregate: count_listings
+  order_by: count_listings desc
+  limit: 20
+}
